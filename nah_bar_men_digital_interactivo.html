@@ -1,0 +1,1135 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>NAHÁ BAR - Menú Digital</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=Montserrat:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+
+
+    <!-- =========================================
+         TAILWIND CONFIG
+    ========================================== -->
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+
+                    colors: {
+                        naha: {
+                            parchment: '#f8f5ee',
+                            parchmentDark: '#eae3d2',
+                            burgundy: '#6B1D28',
+                            burgundyDark: '#3D1016',
+                            charcoal: '#1c1817',
+                            gold: '#d4af37',
+                            goldLight: '#f3e5ab'
+                        }
+                    },
+
+                    fontFamily: {
+                        cinzel: ['Cinzel', 'serif'],
+                        cormorant: ['Cormorant Garamond', 'serif'],
+                        sans: ['Montserrat', 'sans-serif']
+                    }
+                }
+            }
+        };
+    </script>
+
+
+    <!-- =========================================
+         ESTILOS
+    ========================================== -->
+
+    <style>
+
+        /* =========================================
+           SCROLLBAR
+        ========================================== */
+
+        ::-webkit-scrollbar {
+            width: 7px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f8f5ee;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #6B1D28;
+            border-radius: 4px;
+        }
+
+
+        /* =========================================
+           FONDO PARCHMENT
+        ========================================== */
+
+        .parchment-bg {
+            background-color: #f8f5ee;
+
+            background-image:
+                radial-gradient(#6b1d280e 1px, transparent 1px),
+                radial-gradient(#3d10160d 1px, #f8f5ee 1px);
+
+            background-size: 36px 36px;
+
+            background-position:
+                0 0,
+                18px 18px;
+        }
+
+
+        /* =========================================
+           CANVAS DE DESTELLOS
+        ========================================== */
+
+        #sparkleCanvas {
+            position: fixed;
+
+            top: 0;
+            left: 0;
+
+            width: 100vw;
+            height: 100vh;
+
+            pointer-events: none;
+
+            z-index: 50;
+        }
+
+
+        /* =========================================
+           ANIMACIÓN DE LAS PÁGINAS
+        ========================================== */
+
+        .menu-page {
+            opacity: 0;
+
+            transform:
+                translateY(30px)
+                scale(0.98);
+
+            transition:
+                opacity 0.8s ease,
+                transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+
+            margin-bottom: 40px;
+        }
+
+
+        .menu-page.active {
+            opacity: 1;
+
+            transform:
+                translateY(0)
+                scale(1);
+        }
+
+
+        /* =========================================
+           IMÁGENES DEL MENÚ
+        ========================================== */
+
+        .menu-page img {
+            display: block;
+
+            width: 100%;
+            height: auto;
+
+            max-width: 900px;
+
+            margin-left: auto;
+            margin-right: auto;
+
+            border-radius: 6px;
+        }
+
+
+        /* Marco de las imágenes */
+
+        .image-frame {
+            box-shadow:
+                0 15px 35px -5px rgba(61, 16, 22, 0.18),
+                0 0 0 1px rgba(107, 29, 40, 0.12),
+                0 0 0 8px rgba(248, 245, 238, 0.6);
+        }
+
+
+        /* =========================================
+           BRILLO DORADO
+        ========================================== */
+
+        .gold-shimmer {
+            background:
+                linear-gradient(
+                    135deg,
+                    #6B1D28 0%,
+                    #d4af37 50%,
+                    #6B1D28 100%
+                );
+
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+
+        /* =========================================
+           LOGO ANIMADO
+        ========================================== */
+
+        @keyframes floatSlow {
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-6px);
+            }
+        }
+
+
+        .animated-logo {
+            animation:
+                floatSlow 5s ease-in-out infinite;
+        }
+
+
+        /* =========================================
+           OCULTAR SCROLL HORIZONTAL
+        ========================================== */
+
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+
+        /* =========================================
+           CONTENEDOR DEL MENÚ
+        ========================================== */
+
+        .menu {
+            width: 100%;
+        }
+
+
+        /* =========================================
+           RESPONSIVE
+        ========================================== */
+
+        @media (max-width: 640px) {
+
+            .menu-page {
+                margin-bottom: 25px;
+            }
+
+            .menu-page img {
+                border-radius: 3px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body
+    class="parchment-bg text-naha-charcoal font-sans antialiased min-h-screen relative flex flex-col justify-between selection:bg-naha-burgundy selection:text-white">
+
+
+    <!-- =========================================
+         CANVAS PARA DESTELLOS
+    ========================================== -->
+
+    <canvas id="sparkleCanvas"></canvas>
+
+
+    <!-- =========================================
+         HEADER
+    ========================================== -->
+
+    <header
+        class="sticky top-0 z-40 bg-naha-parchment/90 backdrop-blur-md border-b border-naha-burgundy/15 transition-all duration-300 shadow-sm">
+
+        <div
+            class="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
+
+            <!-- LOGO / MARCA -->
+
+            <div
+                class="flex items-center gap-3 cursor-pointer"
+                onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+
+                <div class="animated-logo">
+
+                    <div class="flex flex-col">
+
+                        <span
+                            class="font-cinzel text-xl font-bold tracking-[0.2em] text-naha-burgundy leading-none">
+                            NAHÁ
+                        </span>
+
+                        <span
+                            class="font-sans text-[10px] tracking-[0.35em] text-naha-charcoal/70 uppercase">
+                            Bar
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =========================================
+             NAVEGACIÓN
+        ========================================== -->
+
+        <div
+            class="border-t border-naha-burgundy/10 bg-naha-parchment/70">
+
+            <div
+                class="max-w-4xl mx-auto px-4 py-2 flex items-center justify-center gap-3 overflow-x-auto no-scrollbar">
+
+                <!-- PRIMAVERA -->
+
+                <button
+                    type="button"
+                    onclick="scrollToPage('primavera')"
+                    class="px-3 py-1 text-xs uppercase tracking-widest rounded-full font-medium transition-all text-naha-burgundy hover:bg-naha-burgundy/10 border border-transparent hover:border-naha-burgundy/20 whitespace-nowrap">
+
+                    <i class="fa-solid fa-seedling text-[10px] mr-1"></i>
+
+                    Primavera
+
+                </button>
+
+
+                <!-- VERANO -->
+
+                <button
+                    type="button"
+                    onclick="scrollToPage('verano')"
+                    class="px-3 py-1 text-xs uppercase tracking-widest rounded-full font-medium transition-all text-naha-burgundy hover:bg-naha-burgundy/10 border border-transparent hover:border-naha-burgundy/20 whitespace-nowrap">
+
+                    <i class="fa-solid fa-sun text-[10px] mr-1"></i>
+
+                    Verano
+
+                </button>
+
+
+                <!-- OTOÑO -->
+
+                <button
+                    type="button"
+                    onclick="scrollToPage('otono')"
+                    class="px-3 py-1 text-xs uppercase tracking-widest rounded-full font-medium transition-all text-naha-burgundy hover:bg-naha-burgundy/10 border border-transparent hover:border-naha-burgundy/20 whitespace-nowrap">
+
+                    <i class="fa-solid fa-leaf text-[10px] mr-1"></i>
+
+                    Otoño
+
+                </button>
+
+
+                <!-- INVIERNO -->
+
+                <button
+                    type="button"
+                    onclick="scrollToPage('invierno')"
+                    class="px-3 py-1 text-xs uppercase tracking-widest rounded-full font-medium transition-all text-naha-burgundy hover:bg-naha-burgundy/10 border border-transparent hover:border-naha-burgundy/20 whitespace-nowrap">
+
+                    <i class="fa-solid fa-snowflake text-[10px] mr-1"></i>
+
+                    Invierno
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+
+    <!-- =========================================
+         ENCABEZADO
+    ========================================== -->
+
+    <div
+        class="text-center pt-8 pb-4 px-4 max-w-xl mx-auto">
+
+        <h1
+            class="font-cinzel text-3xl md:text-4xl font-bold tracking-[0.2em] text-naha-burgundy mb-2">
+
+            MENÚ DIGITAL
+
+        </h1>
+
+
+        <div
+            class="flex items-center justify-center gap-3 my-2">
+
+            <span
+                class="h-[1px] w-10 bg-naha-burgundy/30">
+            </span>
+
+
+            <span
+                class="font-cormorant italic text-lg text-naha-charcoal/80">
+
+                Sabores de Estación
+
+            </span>
+
+
+            <span
+                class="h-[1px] w-10 bg-naha-burgundy/30">
+            </span>
+
+        </div>
+
+
+        <p
+            class="font-sans text-xs text-naha-charcoal/60">
+
+            Desliza hacia abajo para recorrer nuestra carta completa
+
+        </p>
+
+    </div>
+
+
+
+    <!-- =========================================
+         MENÚ
+    ========================================== -->
+
+    <main
+        class="menu px-3 md:px-6"
+        aria-label="Menú digital de Nahá Bar">
+
+
+        <!-- =========================================
+             PRIMAVERA
+        ========================================== -->
+
+        <section
+            id="primavera"
+            class="menu-page">
+
+            <img
+                src="./1.png"
+                alt="Menú Nahá Bar - Primavera"
+                loading="eager"
+                class="image-frame"
+                onerror="handleImgError(this, '1.png')">
+
+            <img
+                src="./2.png"
+                alt="Menú Nahá Bar - Primavera"
+                loading="lazy"
+                class="image-frame mt-8"
+                onerror="handleImgError(this, '2.png')">
+
+            <img
+                src="./3.png"
+                alt="Menú Nahá Bar - Primavera"
+                loading="lazy"
+                class="image-frame mt-8"
+                onerror="handleImgError(this, '3.png')">
+
+        </section>
+
+
+
+        <!-- =========================================
+             VERANO
+        ========================================== -->
+
+        <section
+            id="verano"
+            class="menu-page">
+
+            <img
+                src="./4.png"
+                alt="Menú Nahá Bar - Verano"
+                loading="lazy"
+                class="image-frame"
+                onerror="handleImgError(this, '4.png')">
+
+        </section>
+
+
+
+        <!-- =========================================
+             OTOÑO
+        ========================================== -->
+
+        <section
+            id="otono"
+            class="menu-page">
+
+            <img
+                src="./5.png"
+                alt="Menú Nahá Bar - Otoño"
+                loading="lazy"
+                class="image-frame"
+                onerror="handleImgError(this, '5.png')">
+
+        </section>
+
+
+
+        <!-- =========================================
+             INVIERNO
+        ========================================== -->
+
+        <section
+            id="invierno"
+            class="menu-page">
+
+            <img
+                src="./6.png"
+                alt="Menú Nahá Bar - Invierno"
+                loading="lazy"
+                class="image-frame"
+                onerror="handleImgError(this, '6.png')">
+
+        </section>
+
+    </main>
+
+
+
+    <!-- =========================================
+         FRASE FINAL
+    ========================================== -->
+
+    <div
+        class="text-center my-12 px-4">
+
+        <div
+            class="inline-block relative px-8 py-2">
+
+            <span
+                class="absolute left-0 top-1/2 -translate-y-1/2 text-naha-burgundy/40 font-cormorant text-2xl">
+
+                
+
+            </span>
+
+
+            <p
+                class="font-cormorant italic text-xl text-naha-burgundy font-semibold tracking-wide">
+
+                
+
+            </p>
+
+
+            <span
+                class="absolute right-0 top-1/2 -translate-y-1/2 text-naha-burgundy/40 font-cormorant text-2xl">
+
+                
+
+            </span>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =========================================
+         FOOTER
+    ========================================== -->
+
+    <footer
+        class="border-t border-naha-burgundy/15 bg-naha-parchmentDark/40 py-6 text-center text-xs text-naha-charcoal/70">
+
+        <div
+            class="max-w-2xl mx-auto px-4 space-y-2">
+
+            <p
+                class="font-cinzel tracking-widest text-naha-burgundy font-semibold">
+
+                NAHÁ BAR
+
+            </p>
+
+
+            <p
+                class="font-sans text-[11px] opacity-80">
+
+                Menú Digital Interactivo 
+            </p>
+
+        </div>
+
+    </footer>
+
+
+
+    <!-- =========================================
+         JAVASCRIPT
+    ========================================== -->
+
+    <script>
+
+
+        /* =========================================
+           MANEJO DE ERROR DE IMAGEN
+        ========================================== */
+
+        function handleImgError(img, fileName) {
+
+            console.error(
+                'No se pudo cargar la imagen:',
+                fileName
+            );
+
+            img.onerror = null;
+
+            img.src =
+                `https://placehold.co/900x1200/f8f5ee/6B1D28?text=Nah%C3%A1+Bar%0A${encodeURIComponent(fileName)}`;
+
+        }
+
+
+
+        /* =========================================
+           NAVEGACIÓN POR SECCIONES
+        ========================================== */
+
+        function scrollToPage(id) {
+
+            const element =
+                document.getElementById(id);
+
+            if (!element) {
+
+                console.warn(
+                    'No existe la sección:',
+                    id
+                );
+
+                return;
+            }
+
+
+            element.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+
+        }
+
+
+
+        /* =========================================
+           CANVAS DE DESTELLOS
+        ========================================== */
+
+        const canvas =
+            document.getElementById('sparkleCanvas');
+
+
+        const ctx =
+            canvas.getContext('2d');
+
+
+        let width =
+            canvas.width =
+            window.innerWidth;
+
+
+        let height =
+            canvas.height =
+            window.innerHeight;
+
+
+
+        /* =========================================
+           REDIMENSIONAR CANVAS
+        ========================================== */
+
+        window.addEventListener(
+            'resize',
+            () => {
+
+                width =
+                    canvas.width =
+                    window.innerWidth;
+
+
+                height =
+                    canvas.height =
+                    window.innerHeight;
+
+            }
+        );
+
+
+
+        /* =========================================
+           PARTICULAS
+        ========================================== */
+
+        class Particle {
+
+            constructor(x, y) {
+
+                this.x =
+                    x !== undefined
+                        ? x
+                        : Math.random() * width;
+
+
+                this.y =
+                    y !== undefined
+                        ? y
+                        : Math.random() * height;
+
+
+                this.size =
+                    Math.random() * 2.2 + 0.6;
+
+
+                this.speedX =
+                    (Math.random() - 0.5) * 0.9;
+
+
+                this.speedY =
+                    (Math.random() - 0.9) * 1.3;
+
+
+                this.opacity =
+                    Math.random() * 0.85 + 0.15;
+
+
+                this.fadeSpeed =
+                    Math.random() * 0.012 + 0.005;
+
+
+                this.color = [
+                    '#d4af37',
+                    '#f3e5ab',
+                    '#e6ca65',
+                    '#ffffff'
+                ][
+                    Math.floor(
+                        Math.random() * 4
+                    )
+                ];
+
+
+                this.spikes = 4;
+
+            }
+
+
+
+            /* =========================================
+               DIBUJAR ESTRELLA
+            ========================================== */
+
+            drawStar(
+                x,
+                y,
+                radius1,
+                radius2
+            ) {
+
+                let rot =
+                    Math.PI / 2 * 3;
+
+
+                let step =
+                    Math.PI / this.spikes;
+
+
+                ctx.beginPath();
+
+
+                ctx.moveTo(
+                    x,
+                    y - radius1
+                );
+
+
+                for (
+                    let i = 0;
+                    i < this.spikes;
+                    i++
+                ) {
+
+                    let cx =
+                        x +
+                        Math.cos(rot) *
+                        radius1;
+
+
+                    let cy =
+                        y +
+                        Math.sin(rot) *
+                        radius1;
+
+
+                    ctx.lineTo(
+                        cx,
+                        cy
+                    );
+
+
+                    rot += step;
+
+
+                    cx =
+                        x +
+                        Math.cos(rot) *
+                        radius2;
+
+
+                    cy =
+                        y +
+                        Math.sin(rot) *
+                        radius2;
+
+
+                    ctx.lineTo(
+                        cx,
+                        cy
+                    );
+
+
+                    rot += step;
+
+                }
+
+
+                ctx.lineTo(
+                    x,
+                    y - radius1
+                );
+
+
+                ctx.closePath();
+
+            }
+
+
+
+            /* =========================================
+               ACTUALIZAR PARTICULA
+            ========================================== */
+
+            update() {
+
+                this.x +=
+                    this.speedX;
+
+
+                this.y +=
+                    this.speedY;
+
+
+                this.opacity -=
+                    this.fadeSpeed;
+
+
+                ctx.save();
+
+
+                ctx.globalAlpha =
+                    Math.max(
+                        0,
+                        this.opacity
+                    );
+
+
+                ctx.fillStyle =
+                    this.color;
+
+
+                ctx.shadowBlur = 5;
+
+
+                ctx.shadowColor =
+                    '#d4af37';
+
+
+                this.drawStar(
+                    this.x,
+                    this.y,
+                    this.size * 2,
+                    this.size * 0.5
+                );
+
+
+                ctx.fill();
+
+
+                ctx.restore();
+
+            }
+
+        }
+
+
+
+        /* =========================================
+           ARRAY DE PARTICULAS
+        ========================================== */
+
+        let particles = [];
+
+
+
+        /* =========================================
+           AGREGAR DESTELLOS
+        ========================================== */
+
+        function addScrollSparkles() {
+
+            const count =
+                Math.floor(
+                    Math.random() * 3
+                ) + 2;
+
+
+            for (
+                let i = 0;
+                i < count;
+                i++
+            ) {
+
+                const x =
+                    Math.random() * width;
+
+
+                const y =
+                    Math.random() * height;
+
+
+                particles.push(
+                    new Particle(x, y)
+                );
+
+            }
+
+        }
+
+
+
+        /* =========================================
+           DETECTAR SCROLL
+        ========================================== */
+
+        let lastScrollY =
+            window.scrollY;
+
+
+        window.addEventListener(
+            'scroll',
+            () => {
+
+                const currentScrollY =
+                    window.scrollY;
+
+
+                if (
+                    Math.abs(
+                        currentScrollY -
+                        lastScrollY
+                    ) > 3
+                ) {
+
+                    addScrollSparkles();
+
+
+                    lastScrollY =
+                        currentScrollY;
+
+                }
+
+
+                checkReveal();
+
+            },
+            {
+                passive: true
+            }
+        );
+
+
+
+        /* =========================================
+           ANIMACIÓN DE PARTICULAS
+        ========================================== */
+
+        function animateParticles() {
+
+            ctx.clearRect(
+                0,
+                0,
+                width,
+                height
+            );
+
+
+            for (
+                let i = particles.length - 1;
+                i >= 0;
+                i--
+            ) {
+
+                particles[i].update();
+
+
+                if (
+                    particles[i].opacity <= 0
+                ) {
+
+                    particles.splice(
+                        i,
+                        1
+                    );
+
+                }
+
+            }
+
+
+            requestAnimationFrame(
+                animateParticles
+            );
+
+        }
+
+
+
+        /* =========================================
+           MOSTRAR SECCIONES
+        ========================================== */
+
+        function checkReveal() {
+
+            const reveals =
+                document.querySelectorAll(
+                    '.menu-page'
+                );
+
+
+            const windowHeight =
+                window.innerHeight;
+
+
+            reveals.forEach(
+                element => {
+
+                    const elementTop =
+                        element.getBoundingClientRect().top;
+
+
+                    if (
+                        elementTop <
+                        windowHeight - 50
+                    ) {
+
+                        element.classList.add(
+                            'active'
+                        );
+
+                    }
+
+                }
+            );
+
+        }
+
+
+
+        /* =========================================
+           INICIALIZACIÓN
+        ========================================== */
+
+        window.addEventListener(
+            'load',
+            () => {
+
+                /*
+                 * Mostrar las secciones
+                 * inmediatamente.
+                 *
+                 * Esto evita que las imágenes
+                 * permanezcan invisibles si
+                 * JavaScript tarda en ejecutarse.
+                 */
+
+                checkReveal();
+
+
+                /*
+                 * Crear destellos iniciales.
+                 */
+
+                for (
+                    let i = 0;
+                    i < 12;
+                    i++
+                ) {
+
+                    particles.push(
+                        new Particle()
+                    );
+
+                }
+
+            }
+        );
+
+
+
+        /* =========================================
+           INICIAR ANIMACIÓN
+        ========================================== */
+
+        animateParticles();
+
+
+    </script>
+
+
+</body>
+
+</html>
